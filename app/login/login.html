@@ -1,0 +1,77 @@
+<div class="auth-container">
+  <div class="auth-header" *ngIf="currentPanel === 'signIn'">
+    <img src="commune.png" alt="Logo Gestion de Congés" class="app-logo">
+    <p class="welcome-message">Bienvenue sur votre espace de gestion des congés !</p>
+  </div>
+
+  <div class="auth-panel-wrapper">
+    <div *ngIf="currentPanel === 'signIn'" class="auth-panel sign-in-panel">
+      <h2>Connexion</h2>
+      <form (ngSubmit)="onSignIn()">
+        <div class="form-group">
+          <label for="username">Nom d'utilisateur :</label>
+          <input type="text" id="username" placeholder="Entrez votre nom d'utilisateur" name="username" [(ngModel)]="username" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Mot de passe :</label>
+          <input type="password" id="password" placeholder="Entrez votre mot de passe" name="password" [(ngModel)]="password" required>
+        </div>
+        <button type="submit">Se connecter</button>
+        <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+      </form>
+      <p class="toggle-link">
+        Pas encore de compte ? <a href="#" (click)="togglePanel()">S'inscrire</a>
+      </p>
+    </div>
+
+    <div *ngIf="currentPanel === 'signUp'" class="auth-panel sign-up-panel">
+      <h2>Créer un compte</h2>
+      <form (ngSubmit)="onSignUp()">
+        <div class="form-group">
+          <label for="signupMatricule">Matricule :</label>
+          <input type="text" id="signupMatricule" placeholder="Entrez votre matricule" name="signupMatricule" [(ngModel)]="signupMatricule" required>
+        </div>
+        <div class="form-group">
+          <label for="signupCIN">CIN :</label>
+          <input type="text" id="signupCIN" placeholder="Entrez votre CIN" name="signupCIN" [(ngModel)]="signupCIN" required>
+        </div>
+        <div class="form-group">
+          <label for="signupNom">Nom :</label>
+          <input type="text" id="signupNom" placeholder="Entrez votre nom" name="signupNom" [(ngModel)]="signupNom" required>
+        </div>
+        <div class="form-group">
+          <label for="signupPrenom">Prénom :</label>
+          <input type="text" id="signupPrenom" placeholder="Entrez votre prénom" name="signupPrenom" [(ngModel)]="signupPrenom" required>
+        </div>
+        <div class="form-group">
+          <label for="signupDiplome">Diplôme (Optionnel) :</label>
+          <input type="text" id="signupDiplome" placeholder="Entrez votre diplôme" name="signupDiplome" [(ngModel)]="signupDiplome">
+        </div>
+
+        <div class="form-group">
+          <label for="signupRole">Rôle :</label>
+          <select id="signupRole" name="signupRole" [(ngModel)]="signupRole" required>
+            <option value="" disabled selected>Sélectionnez un rôle</option>
+            <option value="Employé">Employé</option>
+            <option value="Chef de service">Chef de service</option>
+            <option value="Directeur">Directeur</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="signupPassword">Choisir un mot de passe :</label>
+          <input type="password" id="signupPassword" placeholder="Choisissez un mot de passe" name="signupPassword" [(ngModel)]="signupPassword" required>
+        </div>
+        <div class="form-group">
+          <label for="signupConfirmPassword">Confirmer le mot de passe :</label>
+          <input type="password" id="signupConfirmPassword" placeholder="Confirmez le mot de passe" name="signupConfirmPassword" [(ngModel)]="signupConfirmPassword" required>
+        </div>
+        <button type="submit">S'inscrire</button>
+        <div *ngIf="signupErrorMessage" class="error-message">{{ signupErrorMessage }}</div>
+        <div *ngIf="signupSuccessMessage" class="success-message">{{ signupSuccessMessage }}</div>
+      </form>
+      <p class="toggle-link">
+        Déjà un compte ? <a href="#" (click)="togglePanel()">Se connecter</a>
+      </p>
+    </div>
+  </div>
+</div>

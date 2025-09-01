@@ -1,0 +1,304 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <h1>Tableau de Bord Chef de Service</h1>
+    <p>Bienvenue, {{ chefInfo.Nom }} {{ chefInfo.Prenom }} (Matricule: {{ chefInfo.Matricule }})</p>
+    <button (click)="logout()" class="logout-button">Déconnexion</button>
+  </header>
+
+  <nav class="dashboard-nav">
+    <ul>
+      <li><a [class.active]="activeSection === 'personalInfo'" (click)="setActiveSection('personalInfo')">Mes Infos</a></li>
+      <li><a [class.active]="activeSection === 'requestConge'" (click)="setActiveSection('requestConge')">Demander Mon Congé</a></li>
+      <li><a [class.active]="activeSection === 'manageEmployeeRequests'" (click)="setActiveSection('manageEmployeeRequests')">Gérer Demandes Employés</a></li>
+      <li><a [class.active]="activeSection === 'manageEmployeeBalances'" (click)="setActiveSection('manageEmployeeBalances')">Gérer Soldes Employés</a></li> <!-- Nouveau lien -->
+      <li><a [class.active]="activeSection === 'congeHistory'" (click)="setActiveSection('congeHistory')">Mon Historique Congés</a></li>
+      <li><a [class.active]="activeSection === 'congeBalance'" (click)="setActiveSection('congeBalance')">Mon Solde Congés</a></li>
+    </ul>
+  </nav>
+
+  <main class="dashboard-main-content">
+
+    <!-- Section Informations Personnelles du Chef -->
+    <section *ngIf="activeSection === 'personalInfo'" class="info-section card">
+      <h2>Mes Informations Personnelles</h2>
+      <div *ngIf="isLoadingChefInfo" class="loading-message">Chargement des informations...</div>
+      <div *ngIf="chefInfoError" class="error-message">{{ chefInfoError }}</div>
+
+      <div *ngIf="!isLoadingChefInfo && !chefInfoError">
+        <div *ngIf="!isEditingChefInfo">
+          <!-- Mode Vue -->
+          <div class="info-grid">
+            <div class="info-item"><strong>Matricule:</strong> {{ chefInfo.Matricule }}</div>
+            <div class="info-item"><strong>CIN:</strong> {{ chefInfo.CIN }}</div>
+            <div class="info-item"><strong>Nom:</strong> {{ chefInfo.Nom }}</div>
+            <div class="info-item"><strong>Prénom:</strong> {{ chefInfo.Prenom }}</div>
+            <div class="info-item"><strong>Intitulé du Grade:</strong> {{ chefInfo.Grade || 'Non spécifié' }}</div>
+            <div class="info-item"><strong>Adresse:</strong> {{ chefInfo.Adress || 'Non spécifié' }}</div>
+            <div class="info-item"><strong>Date de Naissance:</strong> {{ chefInfo.DateN || 'Non spécifié' }}</div>
+            <div class="info-item"><strong>Lieu de Naissance:</strong> {{ chefInfo.LieuN || 'Non spécifié' }}</div>
+            <div class="info-item"><strong>Situation Familiale:</strong> {{ chefInfo.SituationF || 'Non spécifié' }}</div>
+            <div class="info-item"><strong>Nombre d'enfants:</strong> {{ chefInfo.NbrEnfant !== null ? chefInfo.NbrEnfant : 'Non spécifié' }}</div>
+            <div class="info-item"><strong>Diplôme:</strong> {{ chefInfo.Diplome || 'Non spécifié' }}</div>
+            <div class="info-item"><strong>Date d'Embauche:</strong> {{ chefInfo.DateEmb || 'Non spécifié' }}</div>
+          </div>
+          <button (click)="toggleEditChefInfo()" class="edit-button">Modifier mes informations</button>
+        </div>
+
+        <div *ngIf="isEditingChefInfo">
+          <!-- Mode Édition -->
+          <h3>Modifier mes informations</h3>
+          <form (ngSubmit)="saveChefInfo()">
+            <div class="form-group">
+              <label for="editMatricule">Matricule:</label>
+              <input type="text" id="editMatricule" name="editMatricule" [(ngModel)]="updatedChefInfo.Matricule" required readonly>
+            </div>
+            <div class="form-group">
+              <label for="editCIN">CIN:</label>
+              <input type="text" id="editCIN" name="editCIN" [(ngModel)]="updatedChefInfo.CIN" required>
+            </div>
+            <div class="form-group">
+              <label for="editNom">Nom:</label>
+              <input type="text" id="editNom" name="editNom" [(ngModel)]="updatedChefInfo.Nom" required>
+            </div>
+            <div class="form-group">
+              <label for="editPrenom">Prénom:</label>
+              <input type="text" id="editPrenom" name="editPrenom" [(ngModel)]="updatedChefInfo.Prenom" required>
+            </div>
+            <div class="form-group">
+              <label for="editAdress">Adresse:</label>
+              <input type="text" id="editAdress" name="editAdress" [(ngModel)]="updatedChefInfo.Adress">
+            </div>
+            <div class="form-group">
+              <label for="editDateN">Date de Naissance:</label>
+              <input type="date" id="editDateN" name="editDateN" [(ngModel)]="updatedChefInfo.DateN">
+            </div>
+            <div class="form-group">
+              <label for="editLieuN">Lieu de Naissance:</label>
+              <input type="text" id="editLieuN" name="editLieuN" [(ngModel)]="updatedChefInfo.LieuN">
+            </div>
+            <div class="form-group">
+              <label for="editSituationF">Situation Familiale:</label>
+              <input type="text" id="editSituationF" name="editSituationF" [(ngModel)]="updatedChefInfo.SituationF">
+            </div>
+            <div class="form-group">
+              <label for="editNbrEnfant">Nombre d'enfants:</label>
+              <input type="number" id="editNbrEnfant" name="editNbrEnfant" [(ngModel)]="updatedChefInfo.NbrEnfant">
+            </div>
+            <div class="form-group">
+              <label for="editDiplome">Diplôme:</label>
+              <input type="text" id="editDiplome" name="editDiplome" [(ngModel)]="updatedChefInfo.Diplome">
+            </div>
+            <div class="form-group">
+              <label for="editDateEmb">Date d'Embauche:</label>
+              <input type="date" id="editDateEmb" name="editDateEmb" [(ngModel)]="updatedChefInfo.DateEmb" readonly>
+            </div>
+            <div class="form-group">
+              <label for="editGrade">Intitulé du Grade:</label>
+              <input type="text" id="editGrade" name="editGrade" [(ngModel)]="updatedChefInfo.Grade" readonly>
+            </div>
+            <button type="submit" class="submit-button">Enregistrer les modifications</button>
+            <button type="button" (click)="toggleEditChefInfo()" class="cancel-button">Annuler</button>
+            <div *ngIf="chefInfoUpdateMessage" class="success-message">{{ chefInfoUpdateMessage }}</div>
+            <div *ngIf="chefInfoUpdateError" class="error-message">{{ chefInfoUpdateError }}</div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section Demander Mon Congé (pour le Chef de Service) -->
+    <section *ngIf="activeSection === 'requestConge'" class="conge-request-section card">
+      <h2>Demander Mon Congé Annuel</h2>
+      <p class="info-message">Votre demande sera soumise pour approbation.</p>
+      <form (ngSubmit)="submitChefCongeRequest()">
+        <div class="form-group">
+          <label for="chefDateD">Date de Début (DateD):</label>
+          <input type="date" id="chefDateD" name="chefDateD" [(ngModel)]="newChefCongeRequest.dateD" (change)="onChefCongeDateChange()" required>
+        </div>
+        <div class="form-group">
+          <label for="chefDateF">Date de Fin (DateF):</label>
+          <input type="date" id="chefDateF" name="chefDateF" [(ngModel)]="newChefCongeRequest.dateF" (change)="onChefCongeDateChange()" required>
+        </div>
+        <div class="form-group">
+          <label for="chefNbrJ">Nombre de Jours (NbrJ):</label>
+          <input type="number" id="chefNbrJ" name="chefNbrJ" [(ngModel)]="newChefCongeRequest.nbrJ" readonly placeholder="Calculé automatiquement (hors week-ends et fériés)">
+        </div>
+        <div class="form-group">
+          <label for="chefAnnee">Année (Annee):</label>
+          <input type="number" id="chefAnnee" name="chefAnnee" [(ngModel)]="newChefCongeRequest.annee" readonly placeholder="Calculée automatiquement">
+        </div>
+        <div class="form-group">
+          <label for="chefRemarque">Remarque (Motif):</label>
+          <textarea id="chefRemarque" name="chefRemarque" [(ngModel)]="newChefCongeRequest.remarque" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="submit-button">Soumettre la Demande</button>
+        <div *ngIf="chefCongeRequestMessage" class="success-message">{{ chefCongeRequestMessage }}</div>
+        <div *ngIf="chefCongeRequestError" class="error-message">{{ chefCongeRequestError }}</div>
+      </form>
+    </section>
+
+    <!-- Section Gérer Demandes Employés -->
+    <section *ngIf="activeSection === 'manageEmployeeRequests'" class="conge-history-section card">
+      <h2>Gérer les Demandes de Congé des Employés</h2>
+      <p class="info-message">Traitez les demandes de congé soumises par les employés.</p>
+      <div *ngIf="isLoadingEmployeeRequests" class="loading-message">Chargement des demandes...</div>
+      <div *ngIf="employeeRequestsError" class="error-message">{{ employeeRequestsError }}</div>
+      <div *ngIf="!isLoadingEmployeeRequests && !employeeRequestsError">
+        <table *ngIf="employeeCongeRequests.length > 0; else noEmployeeRequests">
+          <thead>
+          <tr>
+            <th>ID Congé</th>
+            <th>Employé</th>
+            <th>Début</th>
+            <th>Fin</th>
+            <th>Jours</th>
+            <th>Année</th>
+            <th>Remarque Employé</th>
+            <th>Statut</th>
+            <th>Remarque Chef</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let request of employeeCongeRequests">
+            <td data-label="ID Congé:">{{ request.IdC }}</td>
+            <td data-label="Employé:">{{ request.Nom }} {{ request.Prenom }} ({{ request.Matricule }})</td> <!-- Affichage du nom/prénom -->
+            <td data-label="Début:">{{ request.DateD }}</td>
+            <td data-label="Fin:">{{ request.DateF }}</td>
+            <td data-label="Jours:">{{ request.NbrJ }}</td>
+            <td data-label="Année:">{{ request.Annee }}</td>
+            <td data-label="Remarque Employé:">{{ request.Remarque }}</td>
+            <td data-label="Statut:">
+                <span [ngClass]="{
+                  'status-pending': request.Statut === 'En attente',
+                  'status-approved': request.Statut === 'Approuvé',
+                  'status-rejected': request.Statut === 'Refusé'
+                }">
+                  {{ request.Statut }}
+                </span>
+            </td>
+            <td data-label="Remarque Chef:">
+              <textarea [(ngModel)]="request.commentaire_chef" rows="2"></textarea>
+            </td>
+            <td data-label="Actions:" class="action-buttons">
+              <button (click)="acceptCongeRequest(request)" class="action-button accept-button" [disabled]="request.Statut !== 'En attente'">Accepter</button>
+              <button (click)="refuseCongeRequest(request)" class="action-button refuse-button" [disabled]="request.Statut !== 'En attente'">Refuser</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+        <ng-template #noEmployeeRequests>
+          <p class="no-data-message">Aucune demande de congé d'employé en attente trouvée.</p>
+        </ng-template>
+      </div>
+    </section>
+
+    <!-- Section: Gérer Soldes Employés -->
+    <section *ngIf="activeSection === 'manageEmployeeBalances'" class="info-section card">
+      <h2>Gérer les Soldes de Congés des Employés</h2>
+      <p class="info-message">Modifiez le solde de congés reportés de l'année précédente pour chaque employé.</p>
+      <div *ngIf="isLoadingEmployeeBalances" class="loading-message">Chargement des soldes des employés...</div>
+      <div *ngIf="employeeBalancesError" class="error-message">{{ employeeBalancesError }}</div>
+      <div *ngIf="employeeBalanceUpdateMessage" class="success-message">{{ employeeBalanceUpdateMessage }}</div>
+      <div *ngIf="employeeBalanceUpdateError" class="error-message">{{ employeeBalanceUpdateError }}</div>
+
+      <div *ngIf="!isLoadingEmployeeBalances && !employeeBalancesError">
+        <table *ngIf="employeeBalances.length > 0; else noEmployeeBalances">
+          <thead>
+          <tr>
+            <th>Matricule</th>
+            <th>Nom & Prénom</th>
+            <th>Solde Annuel (actuel)</th>
+            <th>Solde Reporté (à modifier)</th>
+            <th>Total Disponible</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let employee of employeeBalances">
+            <td data-label="Matricule:">{{ employee.Matricule }}</td>
+            <td data-label="Nom & Prénom:">{{ employee.Nom }} {{ employee.Prenom }}</td>
+            <td data-label="Solde Annuel:">{{ employee.SoldeCongeAnnuel }} jours</td>
+            <td data-label="Solde Reporté:">
+              <input type="number" [(ngModel)]="employee.SoldeCongeAnneePrecedente" min="0">
+            </td>
+            <td data-label="Total Disponible:">{{ employee.SoldeCongeAnnuel + employee.SoldeCongeAnneePrecedente }} jours</td>
+            <td data-label="Actions:">
+              <button (click)="updateEmployeeCarryOverBalance(employee)" class="action-button accept-button">Mettre à jour</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+        <ng-template #noEmployeeBalances>
+          <p class="no-data-message">Aucun employé trouvé pour la gestion des soldes.</p>
+        </ng-template>
+      </div>
+    </section>
+
+
+    <!-- Section Mon Historique Congés (pour le Chef de Service) -->
+    <section *ngIf="activeSection === 'congeHistory'" class="conge-history-section card">
+      <h2>Mon Historique des Congés</h2>
+      <p class="info-message">Consultez l'historique de vos demandes de congé, avec leur statut et la remarque du chef.</p>
+      <div *ngIf="isLoadingAllCongeEntries" class="loading-message">Chargement des entrées de congé...</div>
+      <div *ngIf="allCongeEntriesError" class="error-message">{{ allCongeEntriesError }}</div>
+      <div *ngIf="!isLoadingAllCongeEntries && !allCongeEntriesError">
+        <table *ngIf="allCongeEntries.length > 0; else noEntries">
+          <thead>
+          <tr>
+            <th>ID Congé</th>
+            <th>Début</th>
+            <th>Fin</th>
+            <th>Jours</th>
+            <th>Année</th>
+            <th>Remarque</th>
+            <th>Statut</th>
+            <th>Remarque Chef</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let entry of allCongeEntries">
+            <td data-label="ID Congé:">{{ entry.IdC }}</td>
+            <td data-label="Début:">{{ entry.DateD }}</td>
+            <td data-label="Fin:">{{ entry.DateF }}</td>
+            <td data-label="Jours:">{{ entry.NbrJ }}</td>
+            <td data-label="Année:">{{ entry.Annee }}</td>
+            <td data-label="Remarque:">{{ entry.Remarque }}</td>
+            <td data-label="Statut:">
+                <span [ngClass]="{
+                  'status-pending': entry.Statut === 'En attente',
+                  'status-approved': entry.Statut === 'Approuvé',
+                  'status-rejected': entry.Statut === 'Refusé'
+                }">
+                  {{ entry.Statut }}
+                </span>
+            </td>
+            <td data-label="Remarque Chef:">{{ entry.commentaire_chef || 'N/A' }}</td>
+          </tr>
+          </tbody>
+        </table>
+        <ng-template #noEntries>
+          <p class="no-data-message">Aucune entrée de congé trouvée dans votre historique.</p>
+        </ng-template>
+      </div>
+    </section>
+
+    <!-- Section Mon Solde de Congés (pour le Chef de Service) -->
+    <section *ngIf="activeSection === 'congeBalance'" class="conge-balance-section card">
+      <h2>Mon Solde de Congés</h2>
+      <div class="balance-grid">
+        <div class="balance-item">
+          <strong>Congés Annuels (Année en cours):</strong> {{ chefInfo.SoldeCongeAnnuel }} jours
+        </div>
+        <div class="balance-item">
+          <strong>Congés Reportés (Année précédente):</strong> {{ chefInfo.SoldeCongeAnneePrecedente }} jours
+        </div>
+        <div class="balance-item total-balance">
+          <strong>Total Jours Disponibles:</strong> {{ chefInfo.SoldeCongeAnnuel + chefInfo.SoldeCongeAnneePrecedente }} jours
+        </div>
+      </div>
+    </section>
+
+
+
+  </main>
+</div>

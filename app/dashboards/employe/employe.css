@@ -1,0 +1,365 @@
+
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f4f7f6;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.dashboard-header {
+  background-color: #ffffff;
+  padding: 25px 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  text-align: center;
+  position: relative;
+}
+
+.dashboard-header h1 {
+  color: #7D28F3;
+  margin-bottom: 10px;
+  font-size: 2.5em;
+}
+
+.dashboard-header p {
+  font-size: 1.1em;
+  color: #555;
+  margin-top: 0;
+}
+
+.logout-button {
+  background: linear-gradient(to right, #9B5DE5, #7D28F3);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.logout-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+  opacity: 0.9;
+}
+
+/* Styles de la barre de navigation */
+.dashboard-nav {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 25px;
+  padding: 15px 20px;
+}
+
+.dashboard-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap; /* Permet aux éléments de passer à la ligne */
+  justify-content: center;
+  gap: 15px; /* Espace entre les éléments de navigation */
+}
+
+.dashboard-nav li {
+  /* Pas de styles spécifiques pour les li */
+}
+
+.dashboard-nav a {
+  text-decoration: none;
+  color: #555;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  white-space: nowrap; /* Empêche le texte de se casser sur plusieurs lignes */
+  display: block; /* Pour que le padding et la couleur de fond fonctionnent bien */
+}
+
+.dashboard-nav a:hover {
+  background-color: #f0f0f0;
+  color: #7D28F3;
+}
+
+.dashboard-nav a.active {
+  background: linear-gradient(to right, #7D28F3, #9B5DE5);
+  color: white;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+.dashboard-nav a.active:hover {
+  color: white; /* Conserver le texte blanc au survol */
+  opacity: 0.9;
+}
+
+
+.dashboard-main-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 25px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.card {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card h2 {
+  color: #7D28F3;
+  margin-top: 0;
+  margin-bottom: 25px;
+  font-size: 1.8em;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+}
+
+/* Informations Personnelles Grid */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 15px;
+}
+
+.info-item {
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  font-size: 0.95em;
+  color: #444;
+}
+
+.info-item strong {
+  color: #7D28F3;
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #555;
+}
+
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group input[type="number"],
+.form-group select,
+.form-group textarea {
+  width: calc(100% - 20px);
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1em;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #9B5DE5;
+  outline: none;
+  box-shadow: 0 0 5px rgba(155, 93, 229, 0.5);
+}
+
+.submit-button, .edit-button, .cancel-button {
+  background: linear-gradient(to right, #7D28F3, #9B5DE5);
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: auto;
+  margin-right: 10px;
+  margin-top: 15px;
+}
+
+.edit-button {
+  background: linear-gradient(to right, #28A745, #218838);
+}
+
+.cancel-button {
+  background: linear-gradient(to right, #DC3545, #C82333);
+}
+
+.submit-button:hover, .edit-button:hover, .cancel-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  opacity: 0.9;
+}
+
+/* Table Styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  overflow-x: auto;
+  display: block;
+}
+
+table thead, table tbody {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+table th, table td {
+  border: 1px solid #e0e0e0;
+  padding: 12px 15px;
+  text-align: left;
+  word-wrap: break-word;
+}
+
+table th {
+  background-color: #f0f0f0;
+  color: #666;
+  font-weight: bold;
+  font-size: 0.9em;
+  text-transform: uppercase;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #fcfcfc;
+}
+
+table tbody tr:hover {
+  background-color: #f0f0f0;
+}
+
+.status-pending { color: #FFA500; font-weight: bold; }
+.status-approved { color: #28A745; font-weight: bold; }
+.status-rejected { color: #DC3545; font-weight: bold; }
+
+.loading-message, .error-message, .success-message, .no-data-message, .info-message {
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 15px;
+  font-size: 1em;
+  text-align: center;
+}
+
+.loading-message { background-color: #e0f7fa; color: #00796b; border: 1px solid #00bcd4; }
+.error-message { background-color: #ffe0e0; color: #d32f2f; border: 1px solid #f44336; }
+.success-message { background-color: #e8f5e9; color: #388e3c; border: 1px solid #4caf50; }
+.no-data-message { color: #777; font-style: italic; }
+.info-message { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+
+
+/* Solde de congés */
+.balance-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  text-align: center;
+}
+
+.balance-item {
+  background-color: #e6e6fa;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #d0d0f0;
+  font-size: 1.1em;
+  color: #4a148c;
+  font-weight: bold;
+}
+
+.balance-item strong {
+  display: block;
+  font-size: 0.9em;
+  color: #7D28F3;
+  margin-bottom: 5px;
+}
+
+.new-badge {
+  background-color: #FF5722;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-size: 0.75em;
+  font-weight: bold;
+}
+
+/* Responsive Adjustments */
+@media (min-width: 768px) {
+  .dashboard-main-content {
+    grid-template-columns: 1fr; /* Une seule colonne, car les sections sont maintenant des onglets */
+  }
+}
+
+@media (max-width: 767px) {
+  .dashboard-header {
+    padding: 20px;
+  }
+  .logout-button {
+    position: static;
+    margin-top: 15px;
+    width: 100%;
+  }
+  .card {
+    padding: 20px;
+  }
+  .card h2 {
+    font-size: 1.5em;
+  }
+  .info-grid, .balance-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Tableaux responsifs */
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+  table thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+  table tr {
+    border: 1px solid #e0e0e0;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  table td {
+    border: none;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    padding-left: 50%;
+    text-align: right;
+  }
+  table td:before {
+    position: absolute;
+    left: 15px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    content: attr(data-label);
+    font-weight: bold;
+    color: #7D28F3;
+    text-align: left;
+  }
+}

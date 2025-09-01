@@ -1,0 +1,202 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <h1>Tableau de Bord Employé</h1>
+    <p>Bienvenue, {{ employeInfo.Nom }} {{ employeInfo.Prenom }} (Matricule: {{ employeInfo.Matricule }})</p>
+    <button (click)="logout()" class="logout-button">Déconnexion</button>
+  </header>
+
+  <nav class="dashboard-nav">
+    <ul>
+      <li><a [class.active]="activeSection === 'personalInfo'" (click)="setActiveSection('personalInfo')">Mes Infos</a></li>
+      <li><a [class.active]="activeSection === 'requestConge'" (click)="setActiveSection('requestConge')">Demander Congé</a></li>
+      <li><a [class.active]="activeSection === 'congeHistory'" (click)="setActiveSection('congeHistory')">Historique Congés</a></li>
+      <li><a [class.active]="activeSection === 'congeBalance'" (click)="setActiveSection('congeBalance')">Mon Solde</a></li>
+    </ul>
+  </nav>
+
+  <main class="dashboard-main-content">
+
+    <!-- Section Informations Personnelles -->
+    <section *ngIf="activeSection === 'personalInfo'" class="info-section card">
+      <h2>Mes Informations Personnelles</h2>
+      <div *ngIf="isLoadingPersonalInfo" class="loading-message">Chargement des informations...</div>
+      <div *ngIf="personalInfoError" class="error-message">{{ personalInfoError }}</div>
+
+      <div *ngIf="!isLoadingPersonalInfo && !personalInfoError">
+        <div *ngIf="!isEditingPersonalInfo">
+          <!-- Mode Vue -->
+          <div class="info-grid">
+            <div class="info-item"><strong>Matricule:</strong> {{ employeInfo.Matricule }}</div>
+            <div class="info-item"><strong>CIN:</strong> {{ employeInfo.CIN }}</div>
+            <div class="info-item"><strong>Nom:</strong> {{ employeInfo.Nom }}</div>
+            <div class="info-item"><strong>Prénom:</strong> {{ employeInfo.Prenom }}</div>
+            <div class="info-item"><strong>Intitulé du Grade:</strong> {{ employeInfo.Grade || 'Non spécifié' }}</div>
+            <div class="info-item"><strong>Adresse:</strong> {{ employeInfo.Adress || 'Non spécifié' }}</div>
+            <div class="info-item"><strong>Date de Naissance:</strong> {{ employeInfo.DateN || 'Non spécifié' }}</div>
+            <div class="info-item"><strong>Lieu de Naissance:</strong> {{ employeInfo.LieuN || 'Non spécifié' }}</div>
+            <div class="info-item"><strong>Situation Familiale:</strong> {{ employeInfo.SituationF || 'Non spécifié' }}</div>
+            <div class="info-item"><strong>Nombre d'enfants:</strong> {{ employeInfo.NbrEnfant !== null ? employeInfo.NbrEnfant : 'Non spécifié' }}</div>
+            <div class="info-item"><strong>Diplôme:</strong> {{ employeInfo.Diplome || 'Non spécifié' }}</div>
+            <div class="info-item"><strong>Date d'Embauche:</strong> {{ employeInfo.DateEmb || 'Non spécifié' }}</div>
+          </div>
+          <button (click)="toggleEditPersonalInfo()" class="edit-button">Modifier mes informations</button>
+        </div>
+
+        <div *ngIf="isEditingPersonalInfo">
+          <!-- Mode Édition -->
+          <h3>Modifier mes informations</h3>
+          <form (ngSubmit)="savePersonalInfo()">
+            <div class="form-group">
+              <label for="editMatricule">Matricule:</label>
+              <input type="text" id="editMatricule" name="editMatricule" [(ngModel)]="updatedEmployeInfo.Matricule" required readonly>
+            </div>
+            <div class="form-group">
+              <label for="editCIN">CIN:</label>
+              <input type="text" id="editCIN" name="editCIN" [(ngModel)]="updatedEmployeInfo.CIN" required>
+            </div>
+            <div class="form-group">
+              <label for="editNom">Nom:</label>
+              <input type="text" id="editNom" name="editNom" [(ngModel)]="updatedEmployeInfo.Nom" required>
+            </div>
+            <div class="form-group">
+              <label for="editPrenom">Prénom:</label>
+              <input type="text" id="editPrenom" name="editPrenom" [(ngModel)]="updatedEmployeInfo.Prenom" required>
+            </div>
+            <div class="form-group">
+              <label for="editAdress">Adresse:</label>
+              <input type="text" id="editAdress" name="editAdress" [(ngModel)]="updatedEmployeInfo.Adress">
+            </div>
+            <div class="form-group">
+              <label for="editDateN">Date de Naissance:</label>
+              <input type="date" id="editDateN" name="editDateN" [(ngModel)]="updatedEmployeInfo.DateN">
+            </div>
+            <div class="form-group">
+              <label for="editLieuN">Lieu de Naissance:</label>
+              <input type="text" id="editLieuN" name="editLieuN" [(ngModel)]="updatedEmployeInfo.LieuN">
+            </div>
+            <div class="form-group">
+              <label for="editSituationF">Situation Familiale:</label>
+              <input type="text" id="editSituationF" name="editSituationF" [(ngModel)]="updatedEmployeInfo.SituationF">
+            </div>
+            <div class="form-group">
+              <label for="editNbrEnfant">Nombre d'enfants:</label>
+              <input type="number" id="editNbrEnfant" name="editNbrEnfant" [(ngModel)]="updatedEmployeInfo.NbrEnfant">
+            </div>
+            <div class="form-group">
+              <label for="editDiplome">Diplôme:</label>
+              <input type="text" id="editDiplome" name="editDiplome" [(ngModel)]="updatedEmployeInfo.Diplome">
+            </div>
+            <div class="form-group">
+              <label for="editDateEmb">Date d'Embauche:</label>
+              <input type="date" id="editDateEmb" name="editDateEmb" [(ngModel)]="updatedEmployeInfo.DateEmb" readonly>
+            </div>
+            <div class="form-group">
+              <label for="editGrade">Intitulé du Grade:</label>
+              <input type="text" id="editGrade" name="editGrade" [(ngModel)]="updatedEmployeInfo.Grade" readonly>
+            </div>
+            <button type="submit" class="submit-button">Enregistrer les modifications</button>
+            <button type="button" (click)="toggleEditPersonalInfo()" class="cancel-button">Annuler</button>
+            <div *ngIf="personalInfoUpdateMessage" class="success-message">{{ personalInfoUpdateMessage }}</div>
+            <div *ngIf="personalInfoUpdateError" class="error-message">{{ personalInfoUpdateError }}</div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section Demande de Congé -->
+    <section *ngIf="activeSection === 'requestConge'" class="conge-request-section card">
+      <h2>Demander un Congé Annuel</h2>
+      <form (ngSubmit)="submitCongeRequest()">
+        <div class="form-group">
+          <label for="dateD">Date de Début (DateD):</label>
+          <input type="date" id="dateD" name="dateD" [(ngModel)]="newCongeRequest.dateD" (change)="onDateChange()" required>
+        </div>
+        <div class="form-group">
+          <label for="dateF">Date de Fin (DateF):</label>
+          <input type="date" id="dateF" name="dateF" [(ngModel)]="newCongeRequest.dateF" (change)="onDateChange()" required>
+        </div>
+        <div class="form-group">
+          <label for="nbrJ">Nombre de Jours (NbrJ):</label>
+          <input type="number" id="nbrJ" name="nbrJ" [(ngModel)]="newCongeRequest.nbrJ" readonly placeholder="Calculé automatiquement (hors week-ends et fériés)">
+        </div>
+        <div class="form-group">
+          <label for="annee">Année (Annee):</label>
+          <input type="number" id="annee" name="annee" [(ngModel)]="newCongeRequest.annee" readonly placeholder="Calculée automatiquement">
+        </div>
+        <div class="form-group">
+          <label for="remarque">Remarque (Motif):</label>
+          <textarea id="remarque" name="remarque" [(ngModel)]="newCongeRequest.remarque" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="submit-button">Soumettre la Demande</button>
+        <div *ngIf="congeRequestMessage" class="success-message">{{ congeRequestMessage }}</div>
+        <div *ngIf="congeRequestError" class="error-message">{{ congeRequestError }}</div>
+      </form>
+    </section>
+
+    <!-- Section Historique des Congés (Filtré par l'employé) -->
+    <section *ngIf="activeSection === 'congeHistory'" class="conge-history-section card">
+      <h2>Mon Historique des Demandes de Congé</h2>
+      <p class="info-message">Consultez le statut de vos demandes de congé et les remarques de l'approbateur.</p>
+      <div *ngIf="isLoadingAllCongeEntries" class="loading-message">Chargement de votre historique de congé...</div>
+      <div *ngIf="allCongeEntriesError" class="error-message">{{ allCongeEntriesError }}</div>
+      <div *ngIf="!isLoadingAllCongeEntries && !allCongeEntriesError">
+        <table *ngIf="allCongeEntries.length > 0; else noEntries">
+          <thead>
+          <tr>
+            <th>ID Congé</th>
+            <th>Début</th>
+            <th>Fin</th>
+            <th>Jours</th>
+            <th>Année</th>
+            <th>Remarque Employé</th>
+            <th>Statut</th>
+            <th>Remarque Chef</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let entry of allCongeEntries">
+            <td data-label="ID Congé:">{{ entry.IdC }}</td>
+            <td data-label="Début:">{{ entry.DateD }}</td>
+            <td data-label="Fin:">{{ entry.DateF }}</td>
+            <td data-label="Jours:">{{ entry.NbrJ }}</td>
+            <td data-label="Année:">{{ entry.Annee }}</td>
+            <td data-label="Remarque Employé:">{{ entry.Remarque }}</td>
+            <td data-label="Statut:">
+                <span [ngClass]="{
+                  'status-pending': entry.Statut === 'En attente',
+                  'status-approved': entry.Statut === 'Approuvé',
+                  'status-rejected': entry.Statut === 'Refusé'
+                }">
+                  {{ entry.Statut }}
+                </span>
+            </td>
+            <td data-label="Remarque Chef:">{{ entry.commentaire_chef || 'N/A' }}</td>
+          </tr>
+          </tbody>
+        </table>
+        <ng-template #noEntries>
+          <p class="no-data-message">Aucune demande de congé trouvée dans votre historique.</p>
+        </ng-template>
+      </div>
+    </section>
+
+    <!-- Section Solde de Congés Restant (Réel de la BDD) -->
+    <section *ngIf="activeSection === 'congeBalance'" class="conge-balance-section card">
+      <h2>Mon Solde de Congés</h2>
+      <div class="balance-grid">
+        <div class="balance-item">
+          <strong>Congés Annuels (Année en cours):</strong> {{ employeInfo.SoldeCongeAnnuel }} jours
+        </div>
+        <div class="balance-item">
+          <strong>Congés Reportés (Année précédente):</strong> {{ employeInfo.SoldeCongeAnneePrecedente }} jours
+        </div>
+        <div class="balance-item total-balance">
+          <strong>Total Jours Disponibles:</strong> {{ employeInfo.SoldeCongeAnnuel + employeInfo.SoldeCongeAnneePrecedente }} jours
+        </div>
+      </div>
+    </section>
+
+
+
+  </main>
+</div>

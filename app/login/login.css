@@ -1,0 +1,53 @@
+
+/*
+  TRÈS IMPORTANT en Angular :
+  Le composant racine (<app-root>) doit aussi être un conteneur flex et prendre toute la hauteur
+  pour que votre formulaire puisse être centré à l'intérieur.
+  Assurez-vous que 'app-root' est bien le sélecteur de votre composant racine dans index.html.
+*/
+app-root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%; /* Prend 100% de la hauteur de son parent (body) */
+  width: 100%;     /* Prend 100% de la largeur de son parent */
+}
+/* Styles pour le conteneur du logo et du message de bienvenue */
+.auth-header {
+  margin-bottom: 30px; /* Ajoute un espace sous l'en-tête, avant le formulaire */
+  display: flex;       /* Active Flexbox pour l'alignement des éléments internes */
+  flex-direction: column; /* Empile le logo et le message l'un au-dessus de l'autre */
+  align-items: center; /* Centre le logo et le message horizontalement */
+  text-align: center;  /* S'assure que le texte du message est centré */
+}
+
+/* Styles pour l'image du logo */
+.app-logo {
+  max-width: 120px;
+  height: auto;
+  margin-bottom: 15px; /* Ajoute un espace entre le logo et le message de bienvenue */
+}
+
+/* Styles pour le message de bienvenue */
+.welcome-message {
+  font-size: 1.2em;
+  color: #555;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* --- Ajustements pour les petits écrans (smartphones) --- */
+@media (max-width: 600px) {
+  .auth-header {
+    margin-bottom: 20px; /* Réduit l'espace sous l'en-tête sur les petits écrans */
+  }
+
+  .app-logo {
+    max-width: 90px;     /* Rend le logo un peu plus petit sur mobile */
+    margin-bottom: 10px; /* Réduit l'espace sous le logo sur mobile */
+  }
+
+  .welcome-message {
+    font-size: 1em;      /* Rend le message un peu plus petit sur mobile */
+  }
+}
