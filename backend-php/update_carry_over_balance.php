@@ -1,5 +1,4 @@
 <?php
-// update_carry_over_balance.php
 
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
@@ -23,7 +22,7 @@ if (!isset($input['matricule']) || !isset($input['solde'])) {
 }
 
 $matricule = $input['matricule'];
-$solde = (int)$input['solde']; // Assurez-vous que c'est un entier
+$solde = (int)$input['solde']; 
 
 // Validation simple
 if ($solde < 0) {
@@ -35,7 +34,7 @@ if ($solde < 0) {
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "conge"; // Assurez-vous que c'est le nom CORRECT de votre base de données
+$dbname = "conge";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -70,3 +69,4 @@ try {
     $conn->close();
 }
 ?>
+
