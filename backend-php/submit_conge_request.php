@@ -1,13 +1,10 @@
 <?php
-// submit_conge_request.php
 
-// TRÈS IMPORTANT : Assurez-vous qu'il n'y a AUCUN espace, AUCUN saut de ligne, AUCUN caractère
-// avant la balise <?php. Le fichier doit commencer exactement par <?php
 
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
-header("Access-Control-Allow-Origin: *"); // Permet l'accès depuis n'importe quelle origine (pour le développement)
+header("Access-Control-Allow-Origin: *"); 
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json");
@@ -21,8 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // Récupérer les données JSON de la requête
 $input = json_decode(file_get_contents('php://input'), true);
 
-// Vérifier si les données nécessaires sont présentes
-// Inclure 'Matricule' car c'est maintenant une colonne dans la table 'conge'
+
 if (!isset($input['Matricule']) || !isset($input['DateD']) || !isset($input['DateF']) || !isset($input['NbrJ']) || !isset($input['Annee']) || !isset($input['Remarque'])) {
     echo json_encode(["success" => false, "message" => "Données manquantes pour la soumission du congé."]);
     http_response_code(400); // Bad Request
@@ -38,9 +34,9 @@ $remarque = $input['Remarque'];
 
 // Paramètres de connexion à la base de données
 $servername = "localhost";
-$username = "root"; // Votre nom d'utilisateur de la base de données
-$password = "";     // Votre mot de passe de la base de données
-$dbname = "conge";  // <--- Assurez-vous que c'est le nom CORRECT de votre base de données
+$username = "root"; 
+$password = "";     
+$dbname = "conge";  
 
 // Créer une connexion
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -52,16 +48,9 @@ if ($conn->connect_error) {
     exit();
 }
 
-// Préparer et exécuter la requête d'insertion
-// Inclut maintenant les colonnes Matricule, Statut (par défaut 'En attente') et commentaire_chef (NULL)
-// Assurez-vous que l'ordre des colonnes ici correspond à celui de votre table conge si vous avez modifié l'ordre.
+
 $stmt = $conn->prepare("INSERT INTO conge (Matricule, DateD, DateF, NbrJ, Annee, Remarque, Statut, commentaire_chef) VALUES (?, ?, ?, ?, ?, ?, 'En attente', NULL)");
 
-// "sssids" -> s:string, i:integer, d:double
-// Matricule (s), DateD (s), DateF (s), NbrJ (i), Annee (i), Remarque (s)
-// Note: NbrJ et Annee sont des entiers, donc 'i' pour bind_param.
-// Remarque: J'ai corrigé le type pour NbrJ et Annee à 'i' si ce sont des entiers.
-// Si votre NbrJ ou Annee sont des doubles, utilisez 'd'.
 $stmt->bind_param("sssiis", $matricule, $dateD, $dateF, $nbrJ, $annee, $remarque);
 
 
@@ -76,3 +65,4 @@ if ($stmt->execute()) {
 $stmt->close();
 $conn->close();
 ?>
+
