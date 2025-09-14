@@ -1,10 +1,5 @@
 <?php
-// register.php
 
-// TRÈS IMPORTANT : Assurez-vous qu'il n'y a AUCUN espace, AUCUN saut de ligne, AUCUN caractère
-// avant la balise <?php. Le fichier doit commencer exactement par <?php
-
-// --- FORCER L'AFFICHAGE DES ERREURS POUR LE DÉBOGAGE (à commenter en production) ---
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
@@ -20,16 +15,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(); // Terminer le script après avoir envoyé les en-têtes CORS pour OPTIONS
 }
 
-// --- 2. Définir le type de contenu de la réponse comme JSON ---
+// Définir le type de contenu de la réponse comme JSON
 header('Content-Type: application/json');
 
-// --- 3. Configuration de la base de données ---
+//  Configuration de la base de données
 $dbHost = 'localhost';
-$dbName = 'conge'; // Nom de la base de données
+$dbName = 'conge'; 
 $dbUser = 'root';
-$dbPass = ''; // Mot de passe MySQL
+$dbPass = ''; 
 
-// --- 4. Connexion à la base de données avec PDO ---
+//  Connexion à la base de données avec PDO
 try {
     $pdo = new PDO("mysql:host=$dbHost;dbname=$dbName;charset=utf8mb4", $dbUser, $dbPass);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -40,7 +35,6 @@ try {
     exit();
 }
 
-// --- 5. Lire le corps de la requête POST (JSON) ---
 $input = file_get_contents('php://input');
 $data = json_decode($input, true);
 
@@ -64,11 +58,10 @@ $role = trim($data['Role']);
 // L'identifiant de connexion (User) dans la table 'users' sera le Matricule
 $username_for_login = $matricule;
 
-// --- 6. Vérifications avant insertion ---
+//  Vérifications avant insertion 
 try {
     $pdo->beginTransaction();
 
-    // Vérifie si le Matricule existe déjà dans la table 'Personne'
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM Personne WHERE Matricule = :matricule");
     $stmt->bindParam(':matricule', $matricule);
     $stmt->execute();
@@ -79,7 +72,6 @@ try {
         exit();
     }
 
-    // Vérifie si la CIN existe déjà dans la table 'Personne'
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM Personne WHERE CIN = :cin");
     $stmt->bindParam(':cin', $cin);
     $stmt->execute();
@@ -90,9 +82,8 @@ try {
         exit();
     }
 
-    // Vérifie si le Matricule (qui est 'User' dans 'users') existe déjà dans la table 'users'
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE User = :username");
-    $stmt->bindParam(':username', $username_for_login); // C'est le Matricule
+    $stmt->bindParam(':username', $username_for_login); 
     $stmt->execute();
     if ($stmt->fetchColumn() > 0) {
         $pdo->rollBack();
@@ -101,7 +92,7 @@ try {
         exit();
     }
 
-    // --- 7. Hasher le mot de passe ---
+    //  Hasher le mot de passe 
     $hashed_password = password_hash($password_clair, PASSWORD_BCRYPT);
     if ($hashed_password === false) {
         $pdo->rollBack();
@@ -110,9 +101,7 @@ try {
         exit();
     }
 
-    // --- 8. Insertion dans la table 'Personne' (STRICTEMENT selon votre image) ---
-    // Les colonnes Adress, DateEmb, DateN, LieuN, NbrEnfant, Remarque, SituationF sont nullables ou ont des valeurs par défaut
-    // et ne sont pas fournies par le formulaire d'inscription.
+
     $stmt = $pdo->prepare("INSERT INTO Personne (Matricule, CIN, Nom, Prenom, Diplome) VALUES (:matricule, :cin, :nom, :prenom, :diplome)");
     $stmt->bindParam(':matricule', $matricule);
     $stmt->bindParam(':cin', $cin);
@@ -121,9 +110,6 @@ try {
     $stmt->bindParam(':diplome', $diplome);
     $stmt->execute();
 
-    // --- 9. Insertion dans la table 'users' (pour l'authentification) ---
-    // La colonne 'User' stocke le Matricule.
-    // 'actif' est défini à 1 (true) par défaut.
     $id_user_uuid = uniqid('user_', true); // Génère un ID unique pour IdUser (VARCHAR)
     $stmt = $pdo->prepare("INSERT INTO users (IdUser, Nom, Prenom, User, password, actif) VALUES (:id_user, :nom, :prenom, :username, :password_hash, 1)");
     $stmt->bindParam(':id_user', $id_user_uuid);
@@ -133,17 +119,11 @@ try {
     $stmt->bindParam(':password_hash', $hashed_password);
     $stmt->execute();
 
-    // --- 10. Insertion/Mise à jour dans la table 'appartenir' ---
-    // Utilisation de la date actuelle comme 'dateS'
     $currentDate = date('Y-m-d');
 
-    // IMPORTANT : Définissez ici l'IdS par défaut ou la logique d'attribution du service.
-    // Pour l'exemple, nous utilisons IdS = 1.
-    $defaultIdService = 1; // <--- ADAPTEZ CETTE VALEUR À VOTRE LOGIQUE MÉTIER
+    $defaultIdService = 1; 
 
-    // Vérifier si une entrée existe déjà pour ce Matricule et IdS dans 'appartenir'
-    // Si oui, nous devons mettre à jour le rôle et la dateS, pas insérer.
-    // Cette logique respecte la PRIMARY KEY (Matricule, IdS) de votre table 'appartenir'.
+   
     $stmt_check_appartenir = $pdo->prepare("SELECT COUNT(*) FROM appartenir WHERE Matricule = :matricule AND IdS = :ids");
     $stmt_check_appartenir->bindParam(':matricule', $matricule);
     $stmt_check_appartenir->bindParam(':ids', $defaultIdService);
@@ -169,14 +149,13 @@ try {
         $stmt_appartenir->execute();
     }
 
-    // --- 11. Committer la transaction ---
+    //  Committer la transaction 
     $pdo->commit();
 
     echo json_encode(['success' => true, 'message' => 'Compte créé avec succès. Vous pouvez maintenant vous connecter.']);
     http_response_code(201); // 201 Created
 } catch (PDOException $e) {
     $pdo->rollBack();
-    // Gérer spécifiquement les erreurs de doublon pour les clés uniques
     if ($e->getCode() == '23000' && strpos($e->getMessage(), 'Duplicate entry') !== false) {
         $response_message = 'Erreur d\'unicité : un Matricule, CIN ou une affectation existe déjà.';
         http_response_code(409); // Conflict
@@ -193,3 +172,4 @@ try {
     http_response_code(500);
 }
 ?>
+
