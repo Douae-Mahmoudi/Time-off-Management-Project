@@ -2,7 +2,7 @@
 ob_start(); // Active la mise en mémoire tampon de sortie pour gérer les en-têtes HTTP
 // Désactive l'affichage des erreurs pour la production, mais les logue
 ini_set('display_errors', 'Off');
-error_reporting(E_ALL); // Les erreurs seront toujours journalisées dans les logs du serveur
+error_reporting(E_ALL); 
 
 //  Gestion des CORS pour permettre les requêtes depuis Angular
 header("Access-Control-Allow-Origin: http://localhost:4200");
@@ -146,4 +146,5 @@ header('Content-Disposition: attachment; filename="RapportDeConges.pdf"'); // Fo
 echo $response; // Le contenu binaire du PDF
 exit(); // Termine l'exécution du script
 ?>
+
 
