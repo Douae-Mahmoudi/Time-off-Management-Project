@@ -78,7 +78,6 @@ try {
         http_response_code(200);
     } else {
         // Si la personne est trouvée mais sans grade, ou pas trouvée du tout
-        // Assurez-vous de récupérer SoldeCongeAnnuel et SoldeCongeAnneePrecedente même ici
         $stmtCheckPersonne = $pdo->prepare("SELECT Matricule, CIN, Nom, Prenom, Adress, DateN, LieuN, SituationF, NbrEnfant, Diplome, DateEmb, SoldeCongeAnnuel, SoldeCongeAnneePrecedente FROM personne WHERE Matricule = :matricule");
         $stmtCheckPersonne->bindParam(':matricule', $matricule);
         $stmtCheckPersonne->execute();
@@ -98,3 +97,4 @@ try {
     http_response_code(500);
 }
 ?>
+
