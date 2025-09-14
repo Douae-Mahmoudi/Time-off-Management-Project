@@ -1,24 +1,18 @@
-﻿// Controllers/PdfController.cs
 using Microsoft.AspNetCore.Mvc;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
-using QuestPDF.Infrastructure; // Important pour les types de QuestPDF
-// using QuestPDF.Previewer; // Utile pour le débogage, peut être retiré en production
-using PdfGeneratorApi.Models; // Assurez-vous que le namespace correspond à celui de vos modèles
+using QuestPDF.Infrastructure; 
+using PdfGeneratorApi.Models; 
 using System; // Pour DateTime
 using System.Collections.Generic; // Pour List
 
-namespace PdfGeneratorApi.Controllers // Assurez-vous que le namespace correspond au nom de votre projet
+namespace PdfGeneratorApi.Controllers 
 {
     [ApiController]
-    [Route("api/[controller]")] // Définit l'URL de base pour ce contrôleur (ex: /api/Pdf)
+    [Route("api/[controller]")]
     public class PdfController : ControllerBase
     {
-        /// <summary>
-        /// Génère un rapport PDF des congés à partir des données fournies.
-        /// </summary>
-        /// <param name="data">Les données du rapport de congés (statistiques et détails des demandes).</param>
-        /// <returns>Un fichier PDF.</returns>
+ 
         [HttpPost("generate-leave-report")] // Définit l'URL pour cette action (ex: /api/Pdf/generate-leave-report)
         public IActionResult GenerateLeaveReport([FromBody] LeaveReportData data)
         {
@@ -115,3 +109,4 @@ namespace PdfGeneratorApi.Controllers // Assurez-vous que le namespace correspon
         }
     }
 }
+
