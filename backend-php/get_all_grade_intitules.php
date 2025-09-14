@@ -1,5 +1,4 @@
 <?php
-// get_all_grade_intitules.php
 
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
@@ -17,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "conge"; // Assurez-vous que c'est le nom CORRECT de votre base de données
+$dbname = "conge"; 
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -47,3 +46,4 @@ if ($result->num_rows > 0) {
 
 $conn->close();
 ?>
+
