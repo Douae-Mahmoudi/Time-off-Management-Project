@@ -7,7 +7,7 @@
   width: 90%; /* Largeur responsive par défaut */
   max-width: 500px; /* Largeur maximale pour les grands écrans */
   text-align: center;
-  box-sizing: border-box; /* S'assure que le padding est inclus dans la largeur */
+  box-sizing: border-box; 
   margin: auto; /* Aide au centrage du bloc à l'intérieur d'un élément flex */
 }
 
@@ -16,14 +16,13 @@
   margin-bottom: 25px;
   font-size: 2.2em;
   text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-  word-wrap: break-word; /* Évite que le texte ne dépasse */
+  word-wrap: break-word;
 }
 
-/* Styles par défaut des formulaires et groupes de champs */
 form {
   display: flex;
   flex-direction: column;
-  gap: 18px; /* Espacement par défaut entre les champs */
+  gap: 18px; 
 }
 
 .form-group {
@@ -38,7 +37,6 @@ form {
   font-size: 1.1em;
 }
 
-/* Styles par défaut des champs de saisie (input) */
 .form-group input[type='text'],
 .form-group input[type='password'] {
   width: 100%;
@@ -57,7 +55,6 @@ form {
   box-shadow: 0 0 0 0.25rem rgba(125, 40, 243, 0.25);
 }
 
-/* Styles par défaut des boutons de soumission */
 button[type='submit'] {
   width: 100%;
   padding: 14px;
@@ -77,7 +74,6 @@ button[type='submit']:hover {
   transform: translateY(-2px);
 }
 
-/* Styles des messages d'erreur et de succès */
 .error-message,
 .success-message {
   margin-top: 20px;
@@ -100,7 +96,6 @@ button[type='submit']:hover {
   border: 1px solid #c3e6cb;
 }
 
-/* Styles du lien pour basculer entre Connexion et Inscription */
 .toggle-link {
   margin-top: 20px;
   font-size: 1em;
@@ -117,14 +112,10 @@ button[type='submit']:hover {
   text-decoration: underline;
 }
 
----
 
-/* --- Media Queries pour la Responsivité --- */
-
-/* Pour les petits écrans (smartphones en mode portrait, jusqu'à 600px de large) */
 @media (max-width: 600px) {
   .auth-container {
-    padding: 15px 10px; /* Réduit le padding interne pour gagner de l'espace sur mobile */
+    padding: 15px 10px; 
     width: 98%; /* Prend presque toute la largeur disponible de l'écran */
     max-width: none; /* Désactive la limite de largeur max pour laisser 'width: 98%' agir */
   }
