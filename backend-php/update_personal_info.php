@@ -1,5 +1,4 @@
 <?php
-// update_personal_info.php
 
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
@@ -17,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "conge"; // Assurez-vous que c'est le nom CORRECT de votre base de données
+$dbname = "conge";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -45,9 +44,6 @@ $situationF = isset($data['SituationF']) ? ($data['SituationF'] === '' ? 'NULL' 
 $nbrEnfant = isset($data['NbrEnfant']) ? (is_numeric($data['NbrEnfant']) ? (int)$data['NbrEnfant'] : 'NULL') : 'NULL';
 $diplome = isset($data['Diplome']) ? ($data['Diplome'] === '' ? 'NULL' : "'" . $conn->real_escape_string($data['Diplome']) . "'") : 'NULL';
 
-// Note: DateEmb et Grade ne sont pas mis à jour ici car ils sont généralement gérés par le système (RH)
-// et non directement modifiables par l'utilisateur via cette interface.
-// Les soldes de congés ne sont pas non plus mis à jour ici, car ils ont leur propre section de gestion.
 
 $sql = "UPDATE personne SET
             CIN = '$cin',
@@ -74,3 +70,4 @@ if ($conn->query($sql) === TRUE) {
 
 $conn->close();
 ?>
+
