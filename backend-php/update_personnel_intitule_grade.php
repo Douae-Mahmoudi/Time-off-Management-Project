@@ -1,6 +1,5 @@
 
 <?php
-// update_personnel_intitule_grade.php
 
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
@@ -18,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "conge"; // Assurez-vous que c'est le nom CORRECT de votre base de données
+$dbname = "conge"; 
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -36,7 +35,7 @@ if (!isset($data['matricule']) || !isset($data['newGradeIntitule'])) {
 }
 
 $matricule = $conn->real_escape_string($data['matricule']);
-$newGradeIntitule = $conn->real_escape_string(trim($data['newGradeIntitule'])); // Utiliser trim pour enlever les espaces inutiles
+$newGradeIntitule = $conn->real_escape_string(trim($data['newGradeIntitule'])); 
 
 // Vérifier si l'intitulé de grade est vide après trim
 if (empty($newGradeIntitule)) {
@@ -45,7 +44,6 @@ if (empty($newGradeIntitule)) {
     exit();
 }
 
-// 1. Tenter de récupérer l'IdG de l'intitulé de grade existant
 $sql_get_idg = "SELECT IdG FROM grades WHERE IntituleG = '$newGradeIntitule'";
 $result_idg = $conn->query($sql_get_idg);
 
@@ -61,12 +59,11 @@ if ($result_idg->num_rows > 0) {
     $row_idg = $result_idg->fetch_assoc();
     $newIdG = $row_idg['IdG'];
 } else {
-    // L'intitulé de grade n'existe pas, l'insérer dans la table 'grades'
     $sql_insert_grade = "INSERT INTO grades (IntituleG) VALUES ('$newGradeIntitule')";
     $insert_grade_result = $conn->query($sql_insert_grade);
 
     if ($insert_grade_result === TRUE) {
-        $newIdG = $conn->insert_id; // Récupérer l'ID généré pour le nouveau grade
+        $newIdG = $conn->insert_id; 
     } else {
         // Si l'insertion échoue, renvoyer une erreur
         echo json_encode(["success" => false, "message" => "Erreur lors de l'insertion du nouvel intitulé de grade dans 'grades': " . $conn->error]);
@@ -75,10 +72,7 @@ if ($result_idg->num_rows > 0) {
     }
 }
 
-// À ce stade, $newIdG contient l'IdG valide (existant ou nouvellement inséré)
 
-// 2. Mettre à jour ou insérer l'entrée dans la table 'occupe'
-// On va chercher la dernière entrée par DateEffet pour ce matricule.
 $sql_check_current_occupe = "SELECT IdG FROM occupe WHERE Matricule = '$matricule' ORDER BY DateEffet DESC LIMIT 1";
 $result_check = $conn->query($sql_check_current_occupe);
 
@@ -89,8 +83,7 @@ if ($result_check === false) {
 }
 
 if ($result_check->num_rows > 0) {
-    // Une entrée actuelle existe, la mettre à jour
-    // Nous mettons à jour l'entrée avec la DateEffet la plus récente.
+
     $sql_update_occupe = "UPDATE occupe SET IdG = '$newIdG' WHERE Matricule = '$matricule' AND DateEffet = (SELECT MAX_DATE.DateEffet FROM (SELECT MAX(DateEffet) AS DateEffet FROM occupe WHERE Matricule = '$matricule') AS MAX_DATE)";
     $update_result = $conn->query($sql_update_occupe);
 
@@ -105,8 +98,7 @@ if ($result_check->num_rows > 0) {
         echo json_encode(["success" => false, "message" => "Erreur lors de la mise à jour de l'intitulé du grade dans 'occupe': " . $conn->error]);
     }
 } else {
-    // Aucune entrée actuelle trouvée, insérer une nouvelle entrée dans 'occupe'
-    // La date d'effet sera la date actuelle.
+ 
     $currentDate = date('Y-m-d');
     $sql_insert_occupe = "INSERT INTO occupe (Matricule, IdG, DateEffet) VALUES ('$matricule', '$newIdG', '$currentDate')";
     $insert_result = $conn->query($sql_insert_occupe);
@@ -120,3 +112,4 @@ if ($result_check->num_rows > 0) {
 
 $conn->close();
 ?>
+
