@@ -1,5 +1,5 @@
 <?php
-// get_personal_info.php
+
 
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 $dbHost = 'localhost';
-$dbName = 'conge'; // Assurez-vous que c'est le nom CORRECT de votre base de données
+$dbName = 'conge'; 
 $dbUser = 'root';
 $dbPass = '';
 
