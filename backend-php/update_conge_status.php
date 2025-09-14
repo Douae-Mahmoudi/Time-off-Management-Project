@@ -1,5 +1,4 @@
 <?php
-// update_conge_status.php
 
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
@@ -35,7 +34,7 @@ if (!in_array($statut, ['En attente', 'Approuvé', 'Refusé'])) {
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "conge"; // Assurez-vous que c'est le nom CORRECT de votre base de données
+$dbname = "conge"; 
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -45,11 +44,9 @@ if ($conn->connect_error) {
     exit();
 }
 
-// Démarrer une transaction pour assurer l'atomicité des opérations
 $conn->begin_transaction();
 
 try {
-    // 1. Mettre à jour le statut et le commentaire du congé
     $stmt_conge = $conn->prepare("UPDATE conge SET Statut = ?, commentaire_chef = ? WHERE IdC = ?");
     $stmt_conge->bind_param("ssi", $statut, $commentaireChef, $idC);
     $stmt_conge->execute();
@@ -58,7 +55,6 @@ try {
         throw new Exception("Aucune demande de congé trouvée avec cet ID ou pas de changement effectué.");
     }
 
-    // 2. Si le statut est 'Approuvé', déduire les jours du solde de l'employé
     if ($statut === 'Approuvé') {
         // Récupérer le NbrJ du congé et le Matricule de l'employé
         $stmt_get_conge_info = $conn->prepare("SELECT NbrJ, Matricule FROM conge WHERE IdC = ?");
@@ -90,7 +86,6 @@ try {
         $currentSolde = $personne_info['SoldeCongeAnnuel'];
         $newSolde = $currentSolde - $nbrJ;
 
-        // Assurer que le solde ne devienne pas négatif (si vous avez cette règle métier)
         $newSolde = max(0, $newSolde);
 
         // Mettre à jour le solde de l'employé dans la table 'personne'
@@ -119,3 +114,4 @@ try {
     $conn->close();
 }
 ?>
+
