@@ -1,8 +1,7 @@
-﻿// Models/LeaveReportData.cs
 using System;
 using System.Collections.Generic;
 
-namespace PdfGeneratorApi.Models // Assurez-vous que le namespace correspond au nom de votre projet
+namespace PdfGeneratorApi.Models 
 {
     // Cette classe représente les données globales du rapport
     public class LeaveReportData
@@ -24,3 +23,4 @@ namespace PdfGeneratorApi.Models // Assurez-vous que le namespace correspond au 
         public string Remark { get; set; }      // Correspond à la colonne 'Remarque' en PHP (utilisée pour décrire le type/raison du congé)
     }
 }
+
