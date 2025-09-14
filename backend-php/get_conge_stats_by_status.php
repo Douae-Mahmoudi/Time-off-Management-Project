@@ -1,5 +1,4 @@
 <?php
-// get_conge_stats_by_status.php
 
 ini_set('display_errors', 'On'); // Active l'affichage des erreurs PHP
 error_reporting(E_ALL);        // Rapporte toutes les erreurs PHP
@@ -17,9 +16,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 // Configuration de la base de données
 $servername = "localhost";
-$username = "root"; // Votre nom d'utilisateur MySQL
-$password = "";     // Votre mot de passe MySQL (vide par défaut pour XAMPP/WAMP)
-$dbname = "conge";  // Le nom de votre base de données
+$username = "root"; 
+$password = "";     
+$dbname = "conge";  
 
 // Créer une connexion à la base de données
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -31,21 +30,18 @@ if ($conn->connect_error) {
     exit(); // Arrêter l'exécution du script
 }
 
-// Requête SQL pour compter les congés par statut
-// Assurez-vous que la colonne 'Statut' existe dans votre table 'conge'
+
 $sql = "SELECT Statut, COUNT(*) AS count FROM conge GROUP BY Statut";
 
 $result = $conn->query($sql);
 
-// Vérifier si la requête SQL a échoué
 if ($result === false) {
     echo json_encode(["success" => false, "message" => "Erreur SQL lors de la récupération des statistiques: " . $conn->error]);
-    $conn->close(); // Fermer la connexion avant de quitter
+    $conn->close();
     exit();
 }
 
 $stats = [];
-// Initialiser les statuts pour s'assurer qu'ils sont toujours présents, même s'il n'y a pas de demandes
 $stats['En attente'] = 0;
 $stats['Approuvé'] = 0;
 $stats['Refusé'] = 0;
@@ -60,3 +56,4 @@ echo json_encode(["success" => true, "data" => $stats]);
 
 $conn->close(); // Fermer la connexion à la base de données
 ?>
+
