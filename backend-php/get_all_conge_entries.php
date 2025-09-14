@@ -1,6 +1,4 @@
 <?php
-// get_all_conge_entries.php
-
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
@@ -17,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "conge"; // Assurez-vous que c'est le nom CORRECT de votre base de données
+$dbname = "conge"; 
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -43,7 +41,7 @@ $sql = "SELECT
             p.Prenom,
             p.SoldeCongeAnnuel,
             p.SoldeCongeAnneePrecedente,
-            a.role AS Grade -- <-- CHANGEMENT ICI: Sélectionne 'role' de la table 'appartenir' et l'alias 'Grade'
+            a.role AS Grade 
         FROM
             conge c
         JOIN
@@ -73,3 +71,4 @@ if ($result->num_rows > 0) {
 
 $conn->close();
 ?>
+
