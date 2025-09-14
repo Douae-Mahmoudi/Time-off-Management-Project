@@ -1,5 +1,4 @@
 <?php
-// get_all_persons_with_balances.php
 
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
@@ -17,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "conge"; // Assurez-vous que c'est le nom CORRECT de votre base de données
+$dbname = "conge"; 
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -26,15 +25,13 @@ if ($conn->connect_error) {
     exit();
 }
 
-// Requête SQL pour récupérer le matricule, nom, prénom, solde annuel, solde reporté
-// et le ROLE (Grade) via une jointure avec la table 'appartenir'
 $sql = "SELECT
             p.Matricule,
             p.Nom,
             p.Prenom,
             p.SoldeCongeAnnuel,
             p.SoldeCongeAnneePrecedente,
-            a.role AS Grade -- Sélectionne 'role' de la table 'appartenir' et l'alias 'Grade'
+            a.role AS Grade 
         FROM
             personne p
         LEFT JOIN
@@ -57,7 +54,7 @@ if ($result->num_rows > 0) {
             "Prenom" => $row["Prenom"],
             "SoldeCongeAnnuel" => (int)$row["SoldeCongeAnnuel"], // Cast en int pour s'assurer du type
             "SoldeCongeAnneePrecedente" => (int)$row["SoldeCongeAnneePrecedente"], // Cast en int
-            "Grade" => $row["Grade"] // Le grade est maintenant correctement récupéré
+            "Grade" => $row["Grade"]
         ];
     }
     echo json_encode(["success" => true, "data" => $persons]);
@@ -67,3 +64,4 @@ if ($result->num_rows > 0) {
 
 $conn->close();
 ?>
+
