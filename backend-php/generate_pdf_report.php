@@ -1,8 +1,7 @@
 <?php
-// generate_pdf_report.php
 
-// TRÈS IMPORTANT : Assurez-vous qu'il n'y a AUCUN espace, AUCUN saut de ligne, AUCUN caractère
-// avant la balise <?php. Le fichier doit commencer exactement par <?php
+
+
 
 ob_start(); // Active la mise en mémoire tampon de sortie pour gérer les en-têtes HTTP
 
