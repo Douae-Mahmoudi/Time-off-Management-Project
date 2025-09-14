@@ -1,5 +1,4 @@
 <?php
-// get_all_personnel_details.php
 
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
@@ -17,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "conge"; // Assurez-vous que c'est le nom CORRECT de votre base de données
+$dbname = "conge"; 
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -26,11 +25,7 @@ if ($conn->connect_error) {
     exit();
 }
 
-// Requête SQL pour récupérer toutes les informations de la table 'personne'
-// et joindre le rôle (Role) de la table 'appartenir'
-// et l'intitulé du grade (IntituleG) de la table 'grades' via 'occupe'
-// La sous-requête sélectionne l'entrée 'occupe' la plus récente pour chaque personne
-// en se basant sur la colonne 'DateEffet'.
+
 $sql = "SELECT
             p.IdPersonne,
             p.Matricule,
@@ -56,7 +51,7 @@ $sql = "SELECT
         LEFT JOIN
             (SELECT Matricule, IdG, DateEffet  -- CORRECTION ICI : DateEffet au lieu de DateEffect
              FROM occupe
-             WHERE (Matricule, DateEffet) IN (SELECT Matricule, MAX(DateEffet) FROM occupe GROUP BY Matricule) -- CORRECTION ICI : DateEffet
+             WHERE (Matricule, DateEffet) IN (SELECT Matricule, MAX(DateEffet) FROM occupe GROUP BY Matricule) 
             ) AS o ON p.Matricule = o.Matricule
         LEFT JOIN
             grades g ON o.IdG = g.IdG
@@ -83,3 +78,4 @@ if ($result->num_rows > 0) {
 
 $conn->close();
 ?>
+
