@@ -1,5 +1,4 @@
 <?php
-// get_feries.php
 
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
@@ -44,3 +43,4 @@ try {
     http_response_code(500);
 }
 ?>
+
