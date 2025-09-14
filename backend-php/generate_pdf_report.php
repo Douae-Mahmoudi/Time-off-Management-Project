@@ -1,15 +1,10 @@
 <?php
-
-
-
-
 ob_start(); // Active la mise en mémoire tampon de sortie pour gérer les en-têtes HTTP
-
 // Désactive l'affichage des erreurs pour la production, mais les logue
 ini_set('display_errors', 'Off');
 error_reporting(E_ALL); // Les erreurs seront toujours journalisées dans les logs du serveur
 
-// --- 1. Gestion des CORS pour permettre les requêtes depuis Angular ---
+//  Gestion des CORS pour permettre les requêtes depuis Angular
 header("Access-Control-Allow-Origin: http://localhost:4200");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
@@ -21,16 +16,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-// --- 2. Configuration de la base de données MySQL ---
+//  Configuration de la base de données MySQL 
 $dbHost = 'localhost';
-$dbName = 'conge'; // Assurez-vous que c'est bien 'conge' (sans accent)
+$dbName = 'conge'; 
 $dbUser = 'root';
 $dbPass = '';
 
 try {
     // Tente de se connecter à la base de données en utilisant PDO
     $pdo = new PDO("mysql:host=$dbHost;dbname=$dbName;charset=utf8mb4", $dbUser, $dbPass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // PDO lancera des exceptions en cas d'erreur
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC); // Les résultats seront des tableaux associatifs
 } catch (PDOException $e) {
     // En cas d'échec de connexion, nettoie le tampon et renvoie une erreur JSON
@@ -41,16 +36,15 @@ try {
     exit();
 }
 
-// --- 3. Récupérer les données de la base de données MySQL pour le rapport ---
+//  Récupérer les données de la base de données MySQL pour le rapport 
 // Ces données seront ensuite envoyées à l'API ASP.NET Core pour la génération du PDF
-$directorName = "Directeur Général"; // Ce nom peut être rendu dynamique (ex: récupéré de la session de l'utilisateur connecté)
+$directorName = "Directeur Général"; 
 $totalApprovedLeaves = 0;
 $totalPendingLeaves = 0;
 $leaveDetails = [];
 
 try {
     // Requête pour les statistiques globales des congés
-    // Utilise la table 'conge' et la colonne 'Statut'
     $stmtStats = $pdo->query("SELECT COUNT(*) AS total, Statut FROM conge GROUP BY Statut");
     while ($row = $stmtStats->fetch()) {
         // Adaptez les conditions de statut si vos valeurs d'ENUM sont différentes (ex: 'Approuvé', 'Refusé', 'En attente')
@@ -107,9 +101,8 @@ foreach ($leaveDetails as $detail) {
     ];
 }
 
-// --- 4. Envoyer les données préparées à l'API ASP.NET Core et récupérer le PDF ---
-// CORRECTION ICI : L'URL est mise à jour pour correspondre à celle où votre API écoute
-$aspNetApiUrl = 'https://localhost:7261/api/Pdf/generate-leave-report'; // <--- URL CORRIGÉE
+//  Envoyer les données préparées à l'API ASP.NET Core et récupérer le PDF 
+$aspNetApiUrl = 'https://localhost:7261/api/Pdf/generate-leave-report'; 
 
 $ch = curl_init($aspNetApiUrl); // Initialise une session cURL
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Retourne la réponse sous forme de chaîne au lieu de l'afficher directement
@@ -120,14 +113,12 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Accept: application/pdf'         // Indique que nous attendons un PDF en retour
 ]);
 
-// Si vous utilisez HTTPS avec localhost, vous pourriez avoir besoin de désactiver la vérification SSL
-// C'est UNIQUEMENT pour le développement local et NE DOIT PAS être fait en production.
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
 
 $response = curl_exec($ch); // Exécute la requête cURL
-$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE); // Récupère le code de statut HTTP de la réponse
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE); 
 $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE); // Récupère le type de contenu de la réponse
 $curlError = curl_error($ch); // Récupère l'erreur cURL s'il y en a
 curl_close($ch); // Ferme la session cURL
@@ -148,10 +139,11 @@ if ($response === false || $httpCode !== 200 || $contentType !== 'application/pd
     exit();
 }
 
-// --- 5. Renvoyer le PDF reçu de l'API ASP.NET Core directement à Angular ---
+//  Renvoyer le PDF reçu de l'API ASP.NET Core directement à Angular
 ob_clean(); // Nettoie le tampon de sortie pour s'assurer qu'aucun contenu indésirable n'est envoyé avant le PDF
 header('Content-Type: application/pdf'); // Indique au navigateur que la réponse est un PDF
 header('Content-Disposition: attachment; filename="RapportDeConges.pdf"'); // Force le téléchargement du fichier avec un nom spécifique
 echo $response; // Le contenu binaire du PDF
 exit(); // Termine l'exécution du script
 ?>
+
