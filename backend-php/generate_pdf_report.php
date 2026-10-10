@@ -1,34 +1,28 @@
 <?php
-ob_start(); // Active la mise en mémoire tampon de sortie pour gérer les en-têtes HTTP
-// Désactive l'affichage des erreurs pour la production, mais les logue
+ob_start(); 
 ini_set('display_errors', 'Off');
 error_reporting(E_ALL); 
 
-//  Gestion des CORS pour permettre les requêtes depuis Angular
 header("Access-Control-Allow-Origin: http://localhost:4200");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Access-Control-Allow-Credentials: true");
 
-// Gère les requêtes OPTIONS (preflight requests) envoyées par les navigateurs pour le CORS
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
 
-//  Configuration de la base de données MySQL 
 $dbHost = 'localhost';
 $dbName = 'conge'; 
 $dbUser = 'root';
 $dbPass = '';
 
 try {
-    // Tente de se connecter à la base de données en utilisant PDO
     $pdo = new PDO("mysql:host=$dbHost;dbname=$dbName;charset=utf8mb4", $dbUser, $dbPass);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC); // Les résultats seront des tableaux associatifs
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC); 
 } catch (PDOException $e) {
-    // En cas d'échec de connexion, nettoie le tampon et renvoie une erreur JSON
     ob_clean();
     header('Content-Type: application/json');
     echo json_encode(['success' => false, 'message' => 'Erreur de connexion à la base de données: ' . $e->getMessage()]);
@@ -36,18 +30,14 @@ try {
     exit();
 }
 
-//  Récupérer les données de la base de données MySQL pour le rapport 
-// Ces données seront ensuite envoyées à l'API ASP.NET Core pour la génération du PDF
 $directorName = "Directeur Général"; 
 $totalApprovedLeaves = 0;
 $totalPendingLeaves = 0;
 $leaveDetails = [];
 
 try {
-    // Requête pour les statistiques globales des congés
     $stmtStats = $pdo->query("SELECT COUNT(*) AS total, Statut FROM conge GROUP BY Statut");
     while ($row = $stmtStats->fetch()) {
-        // Adaptez les conditions de statut si vos valeurs d'ENUM sont différentes (ex: 'Approuvé', 'Refusé', 'En attente')
         if (strpos($row['Statut'], 'Approuvé') !== false) {
             $totalApprovedLeaves += $row['total'];
         } elseif (strpos($row['Statut'], 'En attente') !== false) {
@@ -55,12 +45,10 @@ try {
         }
     }
 
-    // Requête pour les détails de toutes les demandes de congé
-    // Jointure entre 'conge' et 'users' pour obtenir le Nom et Prénom de l'employé
     $stmtDetails = $pdo->query("
         SELECT
-            u.Nom,      -- Sélectionné directement depuis la table users
-            u.Prenom,   -- Sélectionné directement depuis la table users
+            u.Nom,      
+            u.Prenom,   
             c.DateD,
             c.DateF,
             c.Statut,
@@ -68,13 +56,12 @@ try {
         FROM
             conge c
         JOIN
-            users u ON c.Matricule = u.User -- Jointure corrigée : conge.Matricule = users.User
+            users u ON c.Matricule = u.User 
         ORDER BY c.DateD DESC
     ");
     $leaveDetails = $stmtDetails->fetchAll();
 
 } catch (PDOException $e) {
-    // En cas d'erreur SQL lors de la récupération des données, nettoie le tampon et renvoie une erreur JSON
     ob_clean();
     header('Content-Type: application/json');
     echo json_encode(['success' => false, 'message' => 'Erreur SQL lors de la récupération des données du rapport: ' . $e->getMessage()]);
@@ -82,8 +69,6 @@ try {
     exit();
 }
 
-// Préparer les données au format JSON attendu par l'API ASP.NET Core
-// Les noms des clés ici doivent correspondre aux propriétés du modèle C# 'LeaveReportData' et 'LeaveDetail'
 $pdfData = [
     'DirectorName' => $directorName,
     'TotalApprovedLeaves' => $totalApprovedLeaves,
@@ -94,57 +79,54 @@ $pdfData = [
 foreach ($leaveDetails as $detail) {
     $pdfData['LeaveDetails'][] = [
         'EmployeeName' => $detail['Nom'] . ' ' . $detail['Prenom'],
-        'StartDate' => (new DateTime($detail['DateD']))->format('Y-m-d\TH:i:s'), // Format ISO 8601 requis par C# DateTime
-        'EndDate' => (new DateTime($detail['DateF']))->format('Y-m-d\TH:i:s'),   // Format ISO 8601 requis par C# DateTime
+        'StartDate' => (new DateTime($detail['DateD']))->format('Y-m-d\TH:i:s'), 
+        'EndDate' => (new DateTime($detail['DateF']))->format('Y-m-d\TH:i:s'),   
         'Status' => $detail['Statut'],
-        'Remark' => $detail['Remarque'] // Utilise la colonne 'Remarque' comme description du congé
+        'Remark' => $detail['Remarque'] 
     ];
 }
 
-//  Envoyer les données préparées à l'API ASP.NET Core et récupérer le PDF 
 $aspNetApiUrl = 'https://localhost:7261/api/Pdf/generate-leave-report'; 
 
-$ch = curl_init($aspNetApiUrl); // Initialise une session cURL
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Retourne la réponse sous forme de chaîne au lieu de l'afficher directement
-curl_setopt($ch, CURLOPT_POST, true); // Définit la requête comme POST
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($pdfData)); // Attache les données JSON au corps de la requête POST
+$ch = curl_init($aspNetApiUrl); 
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); 
+curl_setopt($ch, CURLOPT_POST, true); 
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($pdfData)); 
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    'Content-Type: application/json', // Indique que le corps de la requête est du JSON
-    'Accept: application/pdf'         // Indique que nous attendons un PDF en retour
+    'Content-Type: application/json', 
+    'Accept: application/pdf'         
 ]);
 
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
 
-$response = curl_exec($ch); // Exécute la requête cURL
+$response = curl_exec($ch); 
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE); 
 $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE); // Récupère le type de contenu de la réponse
-$curlError = curl_error($ch); // Récupère l'erreur cURL s'il y en a
-curl_close($ch); // Ferme la session cURL
+$curlError = curl_error($ch); 
+curl_close($ch);
 
-// Vérifier si la requête à l'API ASP.NET Core a réussi et a renvoyé un PDF
 if ($response === false || $httpCode !== 200 || $contentType !== 'application/pdf') {
-    ob_clean(); // Nettoie le tampon de sortie avant d'envoyer une réponse d'erreur
-    header('Content-Type: application/json'); // En cas d'erreur, on renvoie du JSON à Angular
+    ob_clean(); 
+    header('Content-Type: application/json'); 
     echo json_encode([
         'success' => false,
         'message' => 'Erreur lors de la génération du PDF par l\'API ASP.NET Core. Veuillez vérifier les logs PHP et ASP.NET Core.',
-        'curl_error' => $curlError, // Message d'erreur cURL
-        'http_code' => $httpCode, // Code HTTP reçu de l'API ASP.NET Core
-        'content_type_received' => $contentType, // Type de contenu reçu
-        'api_response' => $response // Réponse brute de l'API ASP.NET Core (peut contenir un JSON d'erreur)
+        'curl_error' => $curlError, 
+        'http_code' => $httpCode, 
+        'content_type_received' => $contentType, 
+        'api_response' => $response 
     ]);
     http_response_code(500); // Internal Server Error
     exit();
 }
 
-//  Renvoyer le PDF reçu de l'API ASP.NET Core directement à Angular
-ob_clean(); // Nettoie le tampon de sortie pour s'assurer qu'aucun contenu indésirable n'est envoyé avant le PDF
-header('Content-Type: application/pdf'); // Indique au navigateur que la réponse est un PDF
-header('Content-Disposition: attachment; filename="RapportDeConges.pdf"'); // Force le téléchargement du fichier avec un nom spécifique
-echo $response; // Le contenu binaire du PDF
-exit(); // Termine l'exécution du script
+ob_clean(); 
+header('Content-Type: application/pdf'); 
+header('Content-Disposition: attachment; filename="RapportDeConges.pdf"'); 
+echo $response; 
+exit(); 
 ?>
 
 
